@@ -21,7 +21,7 @@ import simplifyAST from './simplifyAST';
 
 export class NodeTypeMapper {
   constructor() {
-    this.map = { };
+    this.map = {};
   }
 
   mapTypes(types) {
@@ -61,12 +61,12 @@ export function idFetcher(sequelize, nodeTypeMapper) {
 export function typeResolver(nodeTypeMapper) {
   return obj => {
     var type = obj.__graphqlType__
-               || (obj.Model
-                 ? obj.Model.options.name.singular
-                 : obj.name);
+      || (obj.Model
+        ? obj.Model.options.name.singular
+        : obj.name);
 
     if (!type) {
-      throw new Error(`Unable to determine type of ${ typeof obj }. ` +
+      throw new Error(`Unable to determine type of ${typeof obj}. ` +
         `Either specify a resolve function in 'NodeTypeMapper' object, or specify '__graphqlType__' property on object.`);
     }
 
@@ -129,7 +129,7 @@ export function sequelizeConnection({
     orderByEnum = new GraphQLEnumType({
       name: name + 'ConnectionOrder',
       values: {
-        ID: {value: [model.primaryKeyAttribute, 'ASC']}
+        ID: { value: [model.primaryKeyAttribute, 'ASC'] }
       }
     });
   }
@@ -151,8 +151,8 @@ export function sequelizeConnection({
   let orderByDirection = function (orderDirection, args) {
     if (args.last) {
       return orderDirection.indexOf('ASC') >= 0
-              ? orderDirection.replace('ASC', 'DESC')
-              : orderDirection.replace('DESC', 'ASC');
+        ? orderDirection.replace('ASC', 'DESC')
+        : orderDirection.replace('DESC', 'ASC');
     }
     return orderDirection;
   };
@@ -340,7 +340,7 @@ export function sequelizeConnection({
           hasNextPage: hasNextPage,
           hasPreviousPage: hasPreviousPage
         }
-      });
+      }, args, context, info);
     }
   });
 

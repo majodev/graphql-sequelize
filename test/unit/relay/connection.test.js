@@ -1,5 +1,5 @@
 import Sequelize from 'sequelize';
-import {expect} from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import { sequelize } from '../../support/helper';
 import attributeFields from '../../../src/attributeFields';
@@ -21,10 +21,10 @@ import {
 describe('relay', function () {
   describe('connections', function () {
     before(function () {
-      this.User = sequelize.define('user', {}, {timestamps: false});
-      this.Task = sequelize.define('task', {title: Sequelize.STRING}, {timestamps: false});
+      this.User = sequelize.define('user', {}, { timestamps: false });
+      this.Task = sequelize.define('task', { title: Sequelize.STRING }, { timestamps: false });
 
-      this.User.Tasks = this.User.hasMany(this.Task, {as: 'tasks', foreignKey: 'userId'});
+      this.User.Tasks = this.User.hasMany(this.Task, { as: 'tasks', foreignKey: 'userId' });
 
       this.taskType = new GraphQLObjectType({
         name: this.Task.name,
@@ -34,13 +34,15 @@ describe('relay', function () {
         }
       });
 
-      this.spy = sinon.spy(options => options);
+      this.beforeSpy = sinon.spy(options => options);
+      this.afterSpy = sinon.spy(options => options);
 
       this.viewerTaskConnection = sequelizeConnection({
         name: 'Viewer' + this.Task.name,
         nodeType: this.taskType,
         target: this.User.Tasks,
-        before: this.spy
+        before: this.beforeSpy,
+        after: this.afterSpy
       });
 
       this.viewerType = new GraphQLObjectType({
@@ -98,10 +100,10 @@ describe('relay', function () {
           }
         }
       `, null, {
-        viewer: this.viewer
-      });
+          viewer: this.viewer
+        });
 
-      expect(this.spy).to.have.been.calledWithMatch(
+      expect(this.beforeSpy).to.have.been.calledWithMatch(
         sinon.match.any,
         sinon.match({
           orderBy: sinon.match.any
@@ -115,6 +117,22 @@ describe('relay', function () {
           ast: sinon.match.any
         })
       );
+
+      expect(this.afterSpy).to.have.been.calledWithMatch(
+        sinon.match.any, // result
+        sinon.match({
+          orderBy: sinon.match.any
+        }),
+        sinon.match({
+          viewer: {
+            id: this.viewer.id
+          }
+        }),
+        sinon.match({
+          ast: sinon.match.any
+        })
+      );
+
     });
   });
 });
